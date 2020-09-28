@@ -1,5 +1,6 @@
-#include "md5.h"
 #include <stdio.h>
+#include <string.h>
+#include "md5.h"
 
 void calc_md5(unsigned char *input, unsigned int inputlen, char *check_sum)
 {
@@ -25,7 +26,13 @@ void calc_md5(unsigned char *input, unsigned int inputlen, char *check_sum)
 
 int main(int argc, char const *argv[])
 {
-    FILE *file = fopen("../app.bin","r");
+    if(argc<2){
+      printf("Usage:\n");
+      printf("./MD5 path/to/file\n");
+      return -1;
+    }
+
+    FILE *file = fopen(argv[1],"r");
 
     fseek(file,0,SEEK_END);
     
@@ -36,17 +43,22 @@ int main(int argc, char const *argv[])
 
     fseek(file,0,SEEK_SET);
 
-    int r_len = fread(buff,1,len,file);
-    printf("%d\n",r_len);
+    int read_len = fread(buff,1,len,file);
+    if(read_len<0){
+      printf("read file error\n");
+    }
 
     char b_md5[32] = {0};
 
     calc_md5(buff,len,b_md5);
 
     /* print the MD5 value */
+    printf("\n");
+    printf("The MD5 value of %s is: ",argv[1]);
     for (int i=0;i<32;i++){
       printf("%c",b_md5[i]);
     }
+    printf("\n\n");
 
     return 0;
 }
